@@ -25,19 +25,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        return http
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        "/api/users/register",
-                        "/api/users/login"
-                    ).permitAll()
-                    .anyRequest().authenticated())
-            .sessionManagement(session -> session
+        return http.csrf(csrf -> csrf.disable()) // optional; for non-browser POSTs it's fine
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/api/users/register",
+                    "/api/users/login"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .userDetailsService(userDetailsService)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .userDetailsService(userDetailsService)
             .build();
     }
 

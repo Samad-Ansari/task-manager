@@ -36,7 +36,7 @@ public class Task {
     private TaskStatus status;
 
     @CreatedDate
-    @Column(name = "created_date", columnDefinition = "DATETIME")
+    @Column(name = "created_date", columnDefinition = "DATETIME", updatable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
