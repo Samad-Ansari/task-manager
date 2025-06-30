@@ -2,6 +2,7 @@ package com.taskmanager.controller;
 
 import com.taskmanager.dto.request.CreateTaskRequest;
 import com.taskmanager.dto.request.UpdateTaskStatusRequest;
+import com.taskmanager.dto.response.SectionWithTasksResponse;
 import com.taskmanager.dto.response.TaskResponse;
 import com.taskmanager.model.Task;
 import com.taskmanager.service.interfaces.TaskService;
@@ -40,9 +41,10 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+    @GetMapping("/workspace/{workspaceId}")
+    public ResponseEntity<List<SectionWithTasksResponse>> getTasksByWorkspace(
+            @PathVariable Long workspaceId) {
+        return ResponseEntity.ok(taskService.getTasksByWorkspaceId(workspaceId));
     }
 
     private TaskResponse mapToResponse(Task task) {

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
     List<Section> findByWorkspace(Workspace workspace);
+    List<Section> findByWorkspaceId(Long workspaceId);
 }

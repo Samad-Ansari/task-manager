@@ -1,6 +1,8 @@
 package com.taskmanager.service.impl;
 
 import com.taskmanager.dto.request.CreateTaskRequest;
+import com.taskmanager.dto.response.SectionWithTasksResponse;
+import com.taskmanager.dto.response.TaskResponse;
 import com.taskmanager.enums.TaskStatus;
 import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Section;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,8 +66,26 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<SectionWithTasksResponse> getTasksByWorkspaceId(Long workspaceId) {
+        List<Section> sections = sectionRepository.findByWorkspaceId(workspaceId);
+
+        return sections.stream().map(section ->
+            SectionWithTasksResponse.builder()
+                .sectionId(section.getId())
+                .sectionName(section.getName())
+                .tasks(section.getTasks().stream().map(task ->
+                    TaskResponse.builder()
+                        .id(task.getId())
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .status(task.getStatus())
+                        .dueDate(task.getDueDate())
+                        .assigneeName(task.getAssignee().getName())
+                        .build()
+                ).collect(Collectors.toList()))
+                .build()
+        ).collect(Collectors.toList());
     }
+
 
 }
