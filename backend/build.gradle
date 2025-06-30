@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.0.1'
 }
 
 group = 'com.main'
@@ -47,3 +48,30 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+node {
+    version = '18.16.0'           // Node.js version
+    npmVersion = '9.5.1'          // Optional: npm version
+    download = true               // Automatically download Node
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+    nodeProjectDir = file("${rootDir}/frontend") // Your React folder
+}
+
+task npmInstall(type: NpmTask) {
+    args = ['install']
+}
+
+task npmBuild(type: NpmTask) {
+    args = ['run', 'build']
+    dependsOn npmInstall
+}
+
+task copyFrontend(type: Copy) {
+    dependsOn npmBuild
+    from("${rootDir}/frontend/build")
+    into("${projectDir}/src/main/resources/static")
+}
+
+build.dependsOn(copyFrontend)
